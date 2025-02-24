@@ -93,4 +93,4 @@ st.pyplot(fig)
 st.subheader("Forecast Data")
 st.write(forecast_future)
 
-st.success("This inventory forecasting tool helps **reduce stock shortages and improve planning!** 🚀")
+st.success("This inventory forecasting tool helps **reduce stock shortages and improve planning!**")

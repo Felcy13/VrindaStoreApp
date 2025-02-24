@@ -2,38 +2,51 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_squared_error
+from PIL import Image
+import base64
 
 def load_data():
-    return pd.read_csv("Vrinda Store Data.csv")
+    df = pd.read_csv("Vrinda Store Data.csv")
+    df['Date'] = pd.to_datetime(df['Date'])
+    df.columns = df.columns.str.strip()  # Remove spaces in column names
+    return df
 
 df = load_data()
-df['Date'] = pd.to_datetime(df['Date'])
-df.columns = df.columns.str.strip()  # Remove spaces in column names
 
-page_bg_img = f'''
-<style>
-.stApp {{
-    background-image: url("data:image/png;base64,{open("Pic.png", "rb").read().encode("base64").decode()}");
-    background-size: cover;
-}}
-</style>
-'''
-st.markdown(page_bg_img, unsafe_allow_html=True)
-
+st.set_page_config(page_title="Vrinda Sales Analysis - Inventory for Channels and Categories")
 st.title("Vrinda Sales Analysis - Inventory for Channels and Categories")
-st.write("#### By **Felcy Fernandes, Imperial Business School London**")
+st.write("**Felcy Fernandes**")
+st.write("Imperial Business School London")
+
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as image:
+        encoded_string = base64.b64encode(image.read())
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpeg;base64,{encoded_string.decode()}");
+            background-size: cover;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+add_bg_from_local('background.jpg')
+
+# Project summary
+st.header("Project Overview")
 st.write("""
-This dashboard helps **Vrinda Store** analyze its **sales inventory across different channels and categories**.  
-Using **SARIMA forecasting**, it predicts future sales trends, helping in **better stock management**.
+This project analyzes sales data from Vrinda Store to forecast inventory needs across different channels and categories. By utilizing time series forecasting models, we aim to predict future sales trends, enabling efficient inventory management and reducing stockouts or overstock situations.
 """)
 
-st.sidebar.header("Filter Options")
+st.sidebar.header("🔍 Filter Options")
 view_option = st.sidebar.radio("View Forecast By:", ["Channel", "Category"])
 selected_option = st.sidebar.selectbox(
-    f"Select {view_option}:", 
+    f"Select {view_option}:",
     ["All"] + sorted(df[view_option].unique())
 )
 
@@ -71,7 +84,7 @@ test_forecast = sarima_fit.get_forecast(steps=len(test))
 rmse = np.sqrt(mean_squared_error(test['y'], test_forecast.predicted_mean))
 mape = np.mean(np.abs((test['y'] - test_forecast.predicted_mean) / test['y'])) * 100
 
-st.subheader(f"Sales Forecast for {selected_option if selected_option != 'All' else 'All Data'}")
+st.subheader(f"Sales Forecast for {'All Data' if selected_option == 'All' else selected_option} ({view_option})")
 st.write(f"**RMSE:** {rmse:.2f}")
 st.write(f"**MAPE:** {mape:.2f}%")
 
@@ -81,11 +94,9 @@ ax.plot(forecast_future['ds'], forecast_future['yhat'], label="Forecasted Sales"
 ax.fill_between(forecast_future['ds'], forecast_future['yhat_lower'], forecast_future['yhat_upper'], color='gray', alpha=0.3)
 ax.set_xlabel("Date")
 ax.set_ylabel("Sales Amount")
-ax.set_title(f"Sales Forecast for {selected_option} ({view_option})")
+ax.set_title(f"Sales Forecast for {'All Data' if selected_option == 'All' else selected_option} ({view_option})")
 ax.legend()
 st.pyplot(fig)
 
 st.subheader("Forecast Data")
 st.write(forecast_future)
-
-st.success("This inventory forecasting tool helps **reduce stock shortages and improve planning!**")

@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -12,8 +11,7 @@ def load_data():
 
 df = load_data()
 df['Date'] = pd.to_datetime(df['Date'])
-df.columns = df.columns.str.strip()  # Remove spaces in column names
-
+df.columns = df.columns.str.strip()
 
 page_bg_img = '''
 <style>

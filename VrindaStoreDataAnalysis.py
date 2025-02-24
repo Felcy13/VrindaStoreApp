@@ -13,12 +13,12 @@ df = load_data()
 df['Date'] = pd.to_datetime(df['Date'])
 df.columns = df.columns.str.strip()  # Remove spaces in column names
 
-page_bg_img = '''
+page_bg_img = f'''
 <style>
-.stApp {
-    background-image: url("https://source.unsplash.com/1600x900/?warehouse,inventory");
+.stApp {{
+    background-image: url("data:image/png;base64,{open("Pic.png", "rb").read().encode("base64").decode()}");
     background-size: cover;
-}
+}}
 </style>
 '''
 st.markdown(page_bg_img, unsafe_allow_html=True)

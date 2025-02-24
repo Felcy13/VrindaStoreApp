@@ -13,7 +13,24 @@ df = load_data()
 df['Date'] = pd.to_datetime(df['Date'])
 df.columns = df.columns.str.strip()  # Remove spaces in column names
 
-st.sidebar.header("🔍 Filter Options")
+page_bg_img = '''
+<style>
+.stApp {
+    background-image: url("https://source.unsplash.com/1600x900/?warehouse,inventory");
+    background-size: cover;
+}
+</style>
+'''
+st.markdown(page_bg_img, unsafe_allow_html=True)
+
+st.title("Vrinda Sales Analysis - Inventory for Channels and Categories")
+st.write("#### By **Felcy Fernandes, Imperial Business School London**")
+st.write("""
+This dashboard helps **Vrinda Store** analyze its **sales inventory across different channels and categories**.  
+Using **SARIMA forecasting**, it predicts future sales trends, helping in **better stock management**.
+""")
+
+st.sidebar.header("Filter Options")
 view_option = st.sidebar.radio("View Forecast By:", ["Channel", "Category"])
 selected_option = st.sidebar.selectbox(
     f"Select {view_option}:", 
@@ -54,9 +71,7 @@ test_forecast = sarima_fit.get_forecast(steps=len(test))
 rmse = np.sqrt(mean_squared_error(test['y'], test_forecast.predicted_mean))
 mape = np.mean(np.abs((test['y'] - test_forecast.predicted_mean) / test['y'])) * 100
 
-st.title("Inventory Sales Forecasting")
-st.write(f"### Sales Forecast for **{selected_option if selected_option != 'All' else 'All Data'}**")
-
+st.subheader(f"Sales Forecast for {selected_option if selected_option != 'All' else 'All Data'}")
 st.write(f"**RMSE:** {rmse:.2f}")
 st.write(f"**MAPE:** {mape:.2f}%")
 
@@ -72,3 +87,5 @@ st.pyplot(fig)
 
 st.subheader("Forecast Data")
 st.write(forecast_future)
+
+st.success("This inventory forecasting tool helps **reduce stock shortages and improve planning!**")

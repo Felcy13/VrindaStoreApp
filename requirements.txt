@@ -7,6 +7,5 @@ numpy
 statsmodels
 scikit-learn
 Image
-SARIMAX
 base64
 mean_squared_error
